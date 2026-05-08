@@ -30,6 +30,8 @@ Para entender os bastidores do projeto, como o sistema gerencia falhas de API, o
 
 👉 **[Consulte a Arquitetura Completa (ARCHITECTURE.md)](ARCHITECTURE.md)**
 
+👉 **[Consulte PITCH (InvestAI_Autonomous_Intelligence.pdf)](InvestAI_Autonomous_Intelligence.pdf)**
+
 ---
 
 ## 🛠️ Stack de Tecnologias
