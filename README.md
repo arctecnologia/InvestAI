@@ -11,6 +11,9 @@ O **InvestAI** é um agente financeiro autônomo projetado para o mercado brasil
 
 ---
 
+# Interface WEB no streamlit
+https://investai-atqgm7wkojx4zrbtyfxhrn.streamlit.app/
+
 ## ✨ Funcionalidades Principais
 
 * 🧠 **Busca Semântica (NLP):** Não sabe o código da ação? Digite "Banco do Brasil" e a IA descobrirá automaticamente o ticker `BBAS3`.
@@ -60,5 +63,15 @@ Você precisará de duas chaves de API gratuitas:
 Copie e rode a seguinte célula de instalação:
 ```bash
 !pip install -q -U fpdf2 matplotlib yfinance google-genai
+
+
+
+
+
+
+---
+
+
+
 
 
