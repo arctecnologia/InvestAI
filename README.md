@@ -61,10 +61,7 @@ Você precisará de duas chaves de API gratuitas:
     * Nome: `GEMINI_KEY` | Valor: *<sua-chave-gemini>*
 4. Habilite o acesso aos "Notebook access" para ambas as chaves.
 
-### 3. Instalação e Execução
-Copie e rode a seguinte célula de instalação:
-```bash
-!pip install -q -U fpdf2 matplotlib yfinance google-genai
+
 
 
 
