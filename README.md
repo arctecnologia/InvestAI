@@ -12,7 +12,7 @@ O **InvestAI** é um agente financeiro autônomo projetado para o mercado brasil
 ---
 
 # Interface WEB no streamlit
-https://investai-atqgm7wkojx4zrbtyfxhrn.streamlit.app/
+https://investai-lilicatech.streamlit.app/
 
 ## ✨ Funcionalidades Principais
 
