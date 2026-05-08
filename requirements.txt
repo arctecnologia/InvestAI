@@ -1,4 +1,6 @@
 streamlit
 yfinance
 google-genai
+fpdf2
+matplotlib
 pandas
