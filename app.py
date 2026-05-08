@@ -7,6 +7,7 @@ from fpdf import FPDF
 from datetime import datetime
 import io
 import pandas as pd
+import re
 
 # --- Configuração de Página ---
 st.set_page_config(page_title="InvestAI - Dashboard", page_icon="🚀", layout="wide")
@@ -28,7 +29,7 @@ st.markdown("""
 
 # --- Funções de Suporte ---
 def gerar_pdf_bytes(ticker, nome, kpis, analise, fig):
-    """Gera o PDF e garante o retorno em formato BYTES para o Streamlit"""
+    """Gera o PDF e garante o retorno em formato BYTES puro"""
     pdf = FPDF()
     pdf.add_page()
     
@@ -48,25 +49,33 @@ def gerar_pdf_bytes(ticker, nome, kpis, analise, fig):
     pdf.set_y(130)
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("helvetica", "", 10)
-    # Limpeza de caracteres especiais que podem quebrar o PDF
-    analise_limpa = analise.replace('**', '').replace('*', '').encode('latin-1', 'replace').decode('latin-1')
-    pdf.multi_cell(0, 6, analise_limpa)
     
-    # O SEGREDO: converter bytearray para bytes
+    # Tratamento de acentos para PDF (FPDF usa latin-1 por padrão)
+    analise_limpa = analise.replace('**', '').replace('*', '')
+    analise_latin = analise_limpa.encode('latin-1', 'replace').decode('latin-1')
+    pdf.multi_cell(0, 6, analise_latin)
+    
+    # Retorna como bytes (essencial para o download_button)
     return bytes(pdf.output())
 
 def resolver_ticker(cliente, entrada):
-    prompt = f"Retorne apenas o ticker da B3 para: {entrada}. Ex: PETR4. Nada mais."
+    """Extrai apenas o código do ticker, limpando lixo de texto da IA"""
+    prompt = f"Retorne APENAS o ticker da B3 para: {entrada}. Ex: PETR4. Nada mais."
     try:
         res = cliente.models.generate_content(model='gemini-2.5-flash', contents=prompt)
-        return res.text.strip().upper().split()[-1].replace(".SA", "").strip()
+        # Pega a última palavra e remove qualquer caractere que não seja letra ou número
+        texto = res.text.strip().upper()
+        ticker = re.sub(r'[^A-Z0-9]', '', texto.split()[-1])
+        return ticker.replace("SA", "")
     except:
-        return entrada.upper().strip()
+        return re.sub(r'[^A-Z0-9]', '', entrada.upper())
 
 def buscar_dados(ticker):
+    """Busca dados com fallbacks para evitar o erro 'Ativo não encontrado'"""
     for t in [f"{ticker}.SA", ticker]:
         try:
             acao = yf.Ticker(t)
+            # Tenta pegar um histórico pequeno para validar
             hist = acao.history(period="1y")
             if not hist.empty:
                 info = acao.info
@@ -100,8 +109,12 @@ if busca:
         st.info("Insira a API Key na lateral para começar.")
     else:
         cliente = genai.Client(api_key=gemini_key)
-        with st.spinner("🔍 Coletando inteligência de mercado..."):
+        with st.spinner("🔍 Analisando ativos..."):
             ticker_resolvido = resolver_ticker(cliente, busca)
+            
+            # Debug silencioso (ajuda a saber se a IA acertou o ticker)
+            st.caption(f"Ticker identificado: {ticker_resolvido}")
+            
             d = buscar_dados(ticker_resolvido)
             
             if d:
@@ -116,7 +129,7 @@ if busca:
                     cor = "green" if d['val_12m'] >= 0 else "red"
                     st.markdown(f"<div class='kpi-card'><div class='kpi-label'>VALORIZACAO (12M)</div><div class='kpi-value' style='color:{cor} !important;'>{d['val_12m']:.2f}%</div></div>", unsafe_allow_html=True)
 
-                # Grafico
+                # Grafico Estático
                 st.write("")
                 st.subheader(f"📈 Evolução de Preço ({periodo_sel})")
                 hist_plot = yf.Ticker(d['ticker']).history(period=periodo_op[periodo_sel])
@@ -132,12 +145,12 @@ if busca:
                 # Analise IA
                 st.divider()
                 st.subheader("🧠 Raio-X Estratégico InvestAI")
-                prompt_ia = f"Analise {d['ticker']}. Preço R${d['atual']:.2f}, DY {d['dy']:.2f}%. 3 paragrafos com negritos."
+                prompt_ia = f"Analise {d['ticker']}. Preço R${d['atual']:.2f}, DY {d['dy']:.2f}%. 3 paragrafos objetivos."
                 res_ia = cliente.models.generate_content(model='gemini-2.5-flash', contents=prompt_ia)
                 texto_ia = res_ia.text.replace("```markdown", "").replace("```", "").strip()
                 st.markdown(texto_ia)
 
-                # BOTAO DE DOWNLOAD CORRIGIDO
+                # Botão de Download
                 st.write("")
                 try:
                     pdf_data = gerar_pdf_bytes(d['ticker'], d['nome'], d, texto_ia, fig)
@@ -148,6 +161,6 @@ if busca:
                         mime="application/pdf"
                     )
                 except Exception as e:
-                    st.error(f"Erro ao preparar PDF: {e}")
+                    st.error(f"Erro ao preparar o PDF: {e}")
             else:
-                st.error("Ativo não encontrado.")
+                st.error(f"❌ Ativo '{ticker_resolvido}' não encontrado. Tente digitar o código exato (ex: JHSF3).")
