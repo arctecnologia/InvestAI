@@ -19,6 +19,14 @@ O **InvestAI** é um agente financeiro autônomo projetado para o mercado brasil
 
 ---
 
+## 🏛️ Arquitetura do Sistema
+
+Para entender os bastidores do projeto, como o sistema gerencia falhas de API, orquestra os dados financeiros e se comunica com o motor do Google Gemini, acesse nosso documento detalhado:
+
+👉 **[Consulte a Arquitetura Completa (ARCHITECTURE.md)](ARCHITECTURE.md)**
+
+---
+
 ## 🛠️ Stack de Tecnologias
 
 * **Linguagem:** Python
