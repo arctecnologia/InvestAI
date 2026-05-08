@@ -1,4 +1,5 @@
 # 🚀 InvestAI - Assistente Financeiro Inteligente (B3)
+-💡 Projeto inspirado nas trilhas de IA da DIO e Afya
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![Gemini](https://img.shields.io/badge/AI-Google_Gemini_2.5-orange.svg)
@@ -58,3 +59,5 @@ Você precisará de duas chaves de API gratuitas:
 Copie e rode a seguinte célula de instalação:
 ```bash
 !pip install -q -U fpdf2 matplotlib yfinance google-genai
+
+
